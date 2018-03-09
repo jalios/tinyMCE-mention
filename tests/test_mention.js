@@ -30,6 +30,26 @@
         editor.fire('keyup', { which: 13 });
     }
 
+    function pressBackspace() {
+      removeCharsAtCaret(1);
+      editor.fire('keydown', { which: 8 });
+      editor.fire('keyup', { which: 8 });
+    }
+
+    function removeCharsAtCaret(deletedCharacterCount) {
+      var editorRange = editor.selection.getRng(); // get range object for the current caret position
+
+      var node = editorRange.commonAncestorContainer; // relative node to the selection
+
+      var range = document.createRange(); // create a new range object for the deletion
+      range.selectNodeContents(node);
+      range.setStart(node, deletedCharacterCount <= editorRange.endOffset ? editorRange.endOffset - deletedCharacterCount : editorRange.startOffset); // current caret pos - deletedCharacterCount 
+      range.setEnd(node, editorRange.endOffset); // current caret pos
+      range.deleteContents();
+
+      editor.focus(); // brings focus back to the editor
+    }
+
     function insertText(text) {
         var i;
         for (i = 0; i < text.length; i++) {
@@ -188,5 +208,38 @@
             done();
         }, 600);
     });
+
+    QUnit.test('new query text', function (assert) {
+      assert.expect(3);
+
+      pressDelimiter();
+      insertText('ta');
+
+      var done = assert.async();
+
+      setTimeout(function () {
+          assert.equal($('.rte-autocomplete li').length, 3, 'First query: 3 entries loaded.');
+
+          pressBackspace();
+          pressBackspace();
+
+          insertText('ba');
+
+          var done2 = assert.async();
+
+          setTimeout(function () {
+              assert.equal($('.rte-autocomplete li').length, 2, 'Second query: 2 entries loaded.');
+
+              pressArrowDown();
+              pressEnter();
+
+              assert.equal(editor.getContent(), '<p>Tuyet Ybarbo&nbsp;</p>', 'Second entry submitted.');
+
+              done2();
+          }, 600);
+
+          done();
+      }, 600);
+  });
 
 }(tinymce, jQuery, QUnit));

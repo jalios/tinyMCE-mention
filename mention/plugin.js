@@ -30,6 +30,8 @@
 })(function ($) {
     'use strict';
 
+    var ZWNBSP = '&#xFEFF;'
+
     var AutoComplete = function (ed, options) {
         this.editor = ed;
 
@@ -63,14 +65,12 @@
 
         renderInput: function () {
             var rawHtml =  '<span id="autocomplete">' +
-                                '<span id="autocomplete-delimiter">' + this.options.delimiter + '</span>' +
-                                '<span id="autocomplete-searchtext"><span class="dummy">\uFEFF</span></span>' +
-                            '</span>';
+                               '<span id="autocomplete-delimiter">' + this.options.delimiter + '</span>' +
+                               '<span id="autocomplete-searchtext">' + ZWNBSP + ZWNBSP + '</span>' +
+                           '</span>';
 
             this.editor.execCommand('mceInsertContent', false, rawHtml);
-            this.editor.focus();
-            this.editor.selection.select(this.editor.selection.dom.select('span#autocomplete-searchtext span')[0]);
-            this.editor.selection.collapse(0);
+            this.editor.selection.setCursorLocation(this.editor.selection.dom.select('span#autocomplete-searchtext')[0], 1);
         },
 
         bindEvents: function () {
@@ -184,7 +184,7 @@
         },
 
         lookup: function () {
-            this.query = $.trim($(this.editor.getBody()).find('#autocomplete-searchtext').text()).replace('\ufeff', '');
+            this.query = $.trim($(this.editor.getBody()).find('#autocomplete-searchtext').text());
 
             if (this.$dropdown === undefined) {
                 this.show();
