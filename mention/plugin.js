@@ -30,7 +30,7 @@
 })(function ($) {
     'use strict';
 
-    var ZWNBSP = '&#xFEFF;'
+    var ZWNBSP = '&#xFEFF;';
 
     var AutoComplete = function (ed, options) {
         this.editor = ed;

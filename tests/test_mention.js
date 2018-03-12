@@ -30,12 +30,6 @@
         editor.fire('keyup', { which: 13 });
     }
 
-    function pressBackspace() {
-      removeCharsAtCaret(1);
-      editor.fire('keydown', { which: 8 });
-      editor.fire('keyup', { which: 8 });
-    }
-
     function removeCharsAtCaret(deletedCharacterCount) {
       var editorRange = editor.selection.getRng(); // get range object for the current caret position
 
@@ -48,6 +42,12 @@
       range.deleteContents();
 
       editor.focus(); // brings focus back to the editor
+    }
+
+    function pressBackspace() {
+      removeCharsAtCaret(1);
+      editor.fire('keydown', { which: 8 });
+      editor.fire('keyup', { which: 8 });
     }
 
     function insertText(text) {
